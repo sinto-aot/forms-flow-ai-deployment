@@ -8,12 +8,9 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        host: ${{ secrets.APP1_HOST }}
+        username: ${{ secrets.APP1_USERNAME }}
+        key: ${{ secrets.APP1_KEY }}
         script: |
           whoami
-          docker compose down
-          git checkout develop
-          docker compose up
+          
