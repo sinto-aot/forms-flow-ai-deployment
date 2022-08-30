@@ -11,6 +11,7 @@ jobs:
         host: ${{ secrets.APP1_HOST }}
         username: ${{ secrets.APP1_USERNAME }}
         key: ${{ secrets.APP1_KEY }}
+        passphrase: ${{ secrets.APP1_PASSPHRASE }}
         script: |
           whoami
           
