@@ -13,7 +13,14 @@ jobs:
         key: ${{ secrets.APP1_KEY }}
         passphrase: ${{ secrets.APP1_PASSPHRASE }}
         script: |
-          ls -lsa
-          whoami
-          
-          
+          cd /home/dev/apps/forms-flow-ai/deployment/docker
+          docker compose down
+          cd /home/dev/apps/forms-flow-ai
+          git stash
+          git pull origin develop
+          git stash apply
+          cd /home/dev/apps/forms-flow-ai/deployment/docker
+          docker compose up --build -d
+          cd /home/dev/apps/admin
+          docker compose down
+          docker compose up -d
