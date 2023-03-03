@@ -1,5 +1,5 @@
 #!/bin/bash
-ipadd=$(hostname -I | awk '{print $1}')
+ipadd=$(curl http://checkip.amazonaws.com)
 if [ "$(uname)" == "Darwin" ]; then
     ipadd=$(ipconfig getifaddr en0)
 fi
@@ -12,22 +12,9 @@ fi
 KEYCLOAK_BPM_CLIENT_SECRET="e4bdbd25-1467-4f7f-b993-bc4b1944c943"
 KEYCLOAK_URL="http://$ipadd:8080"
 KEYCLOAK_URL_REALM="forms-flow-ai"
-echo "Do you wish to continue installation that include ANALYTICS? [y/n]" 
-read choice
-if [[ $choice == "y" ]]; then
-    ANALYTICS=1
-elif [[ $choice == "n" ]]; then
-    ANALYTICS=0
-fi
-echo "Confirm that your IPv4 address is $ipadd [y/n]"
-read choice
-if [[ $choice == "y" ]]; then
-    ipadd=$ipadd
-    echo "$ipadd"
-elif [[ $choice == "n" ]]; then
-    read -p "Enter your IP Adress: " ipadd
-    echo "$ipadd"
-fi
+
+ANALYTICS=0
+
 #############################################################
 ######################### main function #####################
 #############################################################
@@ -105,43 +92,6 @@ function installconfig
 }
 
 #############################################################
-###################### forms-flow-Analytics #################
-#############################################################
-
-function formsFlowAnalytics
-{
-    REDASH_HOST=http://$ipadd:7000
-    PYTHONUNBUFFERED=0
-    REDASH_LOG_LEVEL=INFO
-    REDASH_REDIS_URL=redis://redis:6379/0
-    POSTGRES_USER=postgres
-    POSTGRES_PASSWORD=changeme
-    POSTGRES_DB=postgres
-    REDASH_COOKIE_SECRET=redash-selfhosted
-    REDASH_SECRET_KEY=redash-selfhosted
-    REDASH_DATABASE_URL=postgresql://postgres:changeme@postgres/postgres
-    REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN=*
-    REDASH_REFERRER_POLICY=no-referrer-when-downgrade
-    REDASH_CORS_ACCESS_CONTROL_ALLOW_HEADERS=Content-Type,Authorization
-    echo REDASH_HOST=$REDASH_HOST>>.env
-    echo PYTHONUNBUFFERED=$PYTHONUNBUFFERED>>.env
-    echo REDASH_LOG_LEVEL=$REDASH_LOG_LEVEL>>.env
-    echo REDASH_REDIS_URL=$REDASH_REDIS_URL>>.env
-    echo POSTGRES_USER=$POSTGRES_USER>>.env
-    echo POSTGRES_PASSWORD=$POSTGRES_PASSWORD>>.env
-    echo POSTGRES_DB=$POSTGRES_DB>>.env
-    echo REDASH_COOKIE_SECRET=$REDASH_COOKIE_SECRET>>.env
-    echo REDASH_SECRET_KEY=$REDASH_SECRET_KEY>>.env
-    echo REDASH_DATABASE_URL=$REDASH_DATABASE_URL>>.env
-    echo REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN=$REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN>>.env
-    echo REDASH_REFERRER_POLICY=$REDASH_REFERRER_POLICY>>.env
-    echo REDASH_CORS_ACCESS_CONTROL_ALLOW_HEADERS=$REDASH_CORS_ACCESS_CONTROL_ALLOW_HEADERS>>.env
-
-    docker-compose -f analytics-docker-compose.yml run --rm server create_db
-    docker-compose -f analytics-docker-compose.yml up --build -d
-}
-
-#############################################################
 ######################## forms-flow-bpm #####################
 #############################################################
 
@@ -212,40 +162,11 @@ function keycloak
     fi
     function defaultinstallation
     {
-        echo WE ARE SETING UP OUR DEFAULT KEYCLOCK FOR YOU
-        printf "%s " "Press enter to continue"
-        read that
         echo Please wait, keycloak is setting up!
         docker-compose -f $docker_compose_file up --build -d keycloak
     }
 }
-function orderwithanalytics
-{
-  echo installation will be completed in the following order:
-  echo 1. keycloak
-  echo 2. analytics
-  echo 3. forms
-  echo 4. camunda
-  echo 5. webapi
-  echo 6. web
-  printf "%s " "Press enter to continue"
-  read that
-  main
-}
 function withoutanalytics
 {
-  echo installation will be completed in the following order:
-  echo 1. keycloak
-  echo 2. forms
-  echo 3. camunda
-  echo 4. webapi
-  echo 5. web 
-  printf "%s " "Press enter to continue"
-  read that
   main
 }
-if [[ $ANALYTICS == 1 ]]; then
-    orderwithanalytics
-elif [[ $ANALYTICS == 0 ]]; then
-    withoutanalytics
-fi
