@@ -10,22 +10,31 @@ if [ "$(uname -m)" == "arm64" ]; then
     docker_compose_file='docker-compose-arm64.yml'
 fi
 
+# Set default value for analytics, 0 for No, 1 for Yes
+ANALYTICS=0  
 
-echo "Do you wish to continue installation that include ANALYTICS? [y/n]" 
-read choice
-if [[ $choice == "y" ]]; then
-    ANALYTICS=1
-elif [[ $choice == "n" ]]; then
-    ANALYTICS=0
-fi
-echo "Confirm that your IPv4 address is $ipadd [y/n]"
-read choice
-if [[ $choice == "y" ]]; then
-    ipadd=$ipadd
-    echo "$ipadd"
-elif [[ $choice == "n" ]]; then
-    read -p "Enter your IP Adress: " ipadd
-    echo "$ipadd"
+# Check for optional command-line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --enable-analytics)
+            ANALYTICS=1
+            shift
+            ;;
+        --ip)
+            ipadd="$2"
+            shift 2
+            ;;
+        *)
+            echo "$1"
+            exit 1
+            ;;
+    esac
+done
+
+# Remove previous .env file, if it exists
+if [[ -f .env ]]; then
+    rm .env
 fi
 
 KEYCLOAK_BPM_CLIENT_SECRET="e4bdbd25-1467-4f7f-b993-bc4b1944c943"
@@ -236,14 +245,6 @@ function orderwithanalytics
 }
 function withoutanalytics
 {
-  echo installation will be completed in the following order:
-  echo 1. keycloak
-  echo 2. forms
-  echo 3. camunda
-  echo 4. webapi
-  echo 5. web 
-  printf "%s " "Press enter to continue"
-  read that
   main
 }
 if [[ $ANALYTICS == 1 ]]; then
