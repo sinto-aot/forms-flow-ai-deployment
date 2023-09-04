@@ -15,7 +15,7 @@ objects:
         {
         "realm": "${REALM}",
         "auth-server-url": "${AUTH_SERVER_URL}" ,
-        "ssl-required": "external",
+        "ssl-required": "none",
         "resource": "forms-flow-web",
         "public-client": true,
         "verify-token-audience": true,
