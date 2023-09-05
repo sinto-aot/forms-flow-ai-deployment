@@ -48,8 +48,8 @@ KEYCLOAK_URL_REALM="forms-flow-ai"
 function main
 {
   keycloak
-  docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password changeme
-  docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
+#  docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password changeme
+#  docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
   if [[ $ANALYTICS == 1 ]]; then
     formsFlowAnalytics
     formsFlowForms
@@ -230,8 +230,8 @@ function keycloak
         read that
         echo Please wait, keycloak is setting up!
         docker-compose -p formsflow-ai -f $docker_compose_file up --build -d keycloak 
-        docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password changeme
-        docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
+   #     docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password changeme
+   #     docker exec formsflow-ai-keycloak-1 bash /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
     }
 }
 function orderwithanalytics
