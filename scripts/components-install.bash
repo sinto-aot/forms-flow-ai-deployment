@@ -47,8 +47,6 @@ KEYCLOAK_URL_REALM="forms-flow-ai"
 
 function main
 {
-  keycloak
-  isKeycloakUp
   if [[ $ANALYTICS == 1 ]]; then
     formsFlowAnalytics
     formsFlowForms
@@ -77,34 +75,12 @@ function isUp
 
 }
 
-function isKeycloakUp
-{
-    # Check if the web api is up
-    keycloak_status="$(curl -LI http://$ipadd:8080 -o /dev/null -w '%{http_code}\n' -s)"
-    if [[ $keycloak_status == 200 ]]; then
-        echo "********************** formsflow.ai is successfully installed ****************************"
-    else
-        echo "Finishing keycloak setup"
-        sleep 5
-        isKeycloakUp
-    fi
-
-}
-
-
-
 #############################################################
 ######################## creating config.js #################
 #############################################################
 
 function installconfig
 {
-#    cd configuration/
-#    pwd
-#    if [[ -f config.js ]]; then
-#      rm config.js
-#    fi
-
    NODE_ENV="development"
    DRAFT_ENABLED=true
    EXPORT_PDF_ENABLED=true
@@ -228,26 +204,7 @@ docker-compose -p formsflow-ai  -f $docker_compose_file up --build -d forms-flow
 isUp
 }
 
-#############################################################
-########################### Keycloak ########################
-#############################################################
 
-function keycloak
-{
-    cd ../docker-compose/
-    if [[ -f .env ]]; then
-     rm .env
-    fi
-    function defaultinstallation
-    {
-        echo WE ARE SETING UP OUR DEFAULT KEYCLOCK FOR YOU
-        printf "%s " "Press enter to continue"
-        read that
-        echo Please wait, keycloak is setting up!
-        docker-compose -p formsflow-ai -f $docker_compose_file up --build -d keycloak 
-        sleep 10
-    }
-}
 function orderwithanalytics
 {
   echo installation will be completed in the following order:
